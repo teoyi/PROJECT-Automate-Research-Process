@@ -33,7 +33,6 @@ while True:
         print('Sorry that is not a valid path/ not a directory. Please try again.')
         continue
 
-#print(lst)
 print('\n')
 print('The following files are found in this directory: ')
 for files in lst:
@@ -58,4 +57,12 @@ for n in range(len(params)-1):
         choicefile.append(params[n])
     else:
        pass
-print(choicefile)
+
+
+# Converting it back to longname format, to be opened and manipulated
+finalfile = []
+for files in range(len(choicefile)-1):
+    join = '_'.join(choicefile[files])
+    finalfile.append(join)
+
+print(finalfile)
