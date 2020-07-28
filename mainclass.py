@@ -30,14 +30,8 @@ class Initial():
     def get_path(self):
         while True:
             dir = input("Paste full path to directory here: ")
-            #print(dir)
-            print(os.path.isdir(dir))
-            # onlyfiles = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir,f))]
-            # print(onlyfiles)
-            onlyfiles = glob.iglob(os.path.join(dir,".csv"))
-            print(onlyfiles)
             if os.path.isdir(dir) == True:
-                for files in glob.iglob(os.path.join(dir, ".csv")):
+                for files in glob.iglob(os.path.join(dir, "*.csv")):
                     print(files)
                     longname = os.path.basename(files)
                     self.lst.append(longname)
