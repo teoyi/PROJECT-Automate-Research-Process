@@ -44,7 +44,7 @@ def get_choice():
     for file in lst:
         split = file.split('_')
         params.append(split)
-    #print(params)
+    #print(len(params))
 
     # Creating a list of existing parameter
     bad_temp = []
@@ -52,17 +52,24 @@ def get_choice():
     bad_offsetn = []
     bad_IT = []
 
-    for files in range(len(params)-1):
-        exist_t = bad_temp.append(params[files][0])
-        exist_op = bad_offsetp.append(params[files][1])
-        exist_on = bad_offsetn.append(params[files][2])
-        exist_IT = bad_IT.append(params[files][6])
+    if len(params) == 1:
+        exist_t = bad_temp.append(params[0][0])
+        exist_op = bad_offsetp.append(params[0][1])
+        exist_on = bad_offsetn.append(params[0][2])
+        exist_IT = bad_IT.append(params[0][6])
+    else:
+        for files in range(len(params)-1):
+            exist_t = bad_temp.append(params[files][0])
+            exist_op = bad_offsetp.append(params[files][1])
+            exist_on = bad_offsetn.append(params[files][2])
+            exist_IT = bad_IT.append(params[files][6])
 
+    #print(bad_temp)
     temp_exist = set(bad_temp)
     offsetp_exist = set(bad_offsetp)
     offsetn_exist = set(bad_offsetn)
     IT_exist = set(bad_IT)
-
+    print(temp_exist)
     choosing = True
     while choosing:
         # Narrowing down the files to what you want to use
@@ -100,7 +107,18 @@ def get_choice():
     for files in range(len(choicefile)-1):
         join = '_'.join(choicefile[files])
         finalfile.append(join)
-
     #print(finalfile)
 
 get_choice()
+
+def openfile():
+    for files in range(len(finalfile)-1):
+        df = pd.read_csv(finalfile[files])
+        # Correcting for bug
+        if df["S2"] > 10000:
+            print(df["S2"])
+        else:
+            pass
+
+
+openfile()
