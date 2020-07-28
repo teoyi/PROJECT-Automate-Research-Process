@@ -70,30 +70,39 @@ def get_choice():
     offsetn_exist = set(bad_offsetn)
     IT_exist = set(bad_IT)
     print(temp_exist)
+
     choosing = True
     while choosing:
         # Narrowing down the files to what you want to use
-        choicetemp = input('Which temperature?: ')
-        if choicetemp in temp_exist:
+        while True:
+            choicetemp = input('Which temperature?: ')
+            if choicetemp in temp_exist:
+                break
+            else:
+                print('Sorry, data with that temperature does not exist in this directory. Please try again.')
+                continue
+        while True:
             choiceoffsetp = input('Which (+) offset?: ')
             if choiceoffsetp in offsetp_exist:
-                choiceoffsetn = input('Which (-) offset?: ')
-                if choiceoffsetn in offsetn_exist:
-                    choiceIT = input('Which integration time?: ')
-                    if choiceIT in IT_exist:
-                        break
-                    else:
-                        print('Sorry, data with that integration time does not exist. Please try again.')
-                        continue
-                else:
-                    print('Sorry, data with that (-) offset does not exist. Please try again.')
-                    continue
+                break
             else:
                 print('Sorry, data with that (+) offset does not exist. Please try again.')
                 continue
-        else:
-            print('Sorry, data with that temperature does not exist in this directory. Please try again.')
-            continue
+        while True:
+            choiceoffsetn = input('Which (-) offset?: ')
+            if choiceoffsetn in offsetn_exist:
+                break
+            else:
+                print('Sorry, data with that (-) offset does not exist. Please try again.')
+                continue
+        while True:
+            choiceIT = input('Which integration time?: ')
+            if choiceIT in IT_exist:
+                break
+            else:
+                print('Sorry, data with that integration time does not exist. Please try again.')
+                continue
+        break
 
     choicefile = []
     for n in range(len(params)-1):
@@ -109,8 +118,6 @@ def get_choice():
         finalfile.append(join)
     #print(finalfile)
 
-get_choice()
-
 def openfile():
     for files in range(len(finalfile)-1):
         df = pd.read_csv(finalfile[files])
@@ -120,5 +127,5 @@ def openfile():
         else:
             pass
 
-
+get_choice()
 openfile()
