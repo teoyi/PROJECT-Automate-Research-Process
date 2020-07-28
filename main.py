@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import glob # For listing out files in a directory
 import os
 ###############################################################################
+
 def get_choice():
     # Extracting full name of .csv files since there is a format to it
     lst = []
@@ -23,6 +24,7 @@ def get_choice():
             for files in glob.iglob(os.path.join(dir, "*.csv")): # Creates an interable of all .csv files
                 longname = os.path.basename(files)
                 lst.append(longname) # Place file names into a list
+            return lst
             break
 
         else:
@@ -41,6 +43,7 @@ def get_choice():
     for file in lst:
         split = file.split('_')
         params.append(split)
+    return params
     #print(len(params))
 
     # Creating a list of existing parameter
@@ -60,6 +63,7 @@ def get_choice():
             exist_op = bad_offsetp.append(params[files][1])
             exist_on = bad_offsetn.append(params[files][2])
             exist_IT = bad_IT.append(params[files][6])
+        return bad_temp, bad_offsetn, bad_offsetp, bad_IT
 
     #print(bad_temp)
     temp_exist = set(bad_temp)
@@ -106,6 +110,7 @@ def get_choice():
         # print(params[n])
         if choicetemp == params[n][0] and choiceoffsetp == params[n][1] and choiceoffsetn == params[n][2] and choiceIT == params[n][6]:
             choicefile.append(params[n])
+    return choicefile
     #print(choicefile)
 
     # Converting it back to longname format, to be opened and manipulated
@@ -113,9 +118,14 @@ def get_choice():
     for files in range(len(choicefile)-1):
         join = '_'.join(choicefile[files])
         finalfile.append(join)
+    return finalfile
     #print(finalfile)
 
-def openfile():
+finalfile = get_choice()
+print(finalfile[1])
+
+
+def openfile(finalfile,dir):
     for files in range(len(finalfile)-1):
         df = pd.read_csv(finalfile[files])
         # Correcting for bug
@@ -124,5 +134,5 @@ def openfile():
         else:
             pass
 
-get_choice()
-openfile()
+# get_choice()
+openfile(get_choice())
