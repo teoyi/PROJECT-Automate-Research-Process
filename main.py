@@ -1,22 +1,19 @@
 '''
 PROJECT: Research Process Automation for Ufe Lab
-
 Objective of this program:
-
 1. Recognize longname of the files
 2. Process Multiple csv file of the same category/params to get desired values
 3. Transfer new values to a new csv file for viewing
 4. Be able to plot the graphs and view it as needed
 5. Potentially a GUI to host all commands there
-
 '''
-
+###############################################################################
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import glob # For listing out files in a directory
 import os
-
+###############################################################################
 def get_choice():
     # Extracting full name of .csv files since there is a format to it
     lst = []
