@@ -39,7 +39,7 @@ class Main():
             else:
                 break
         while choosing:
-            self.choice = input('''Choose all or specific?: \n1. Open all\n2. Open Specific\n(Enter 1 or 2)\n''')
+            self.choice = input('''View All or View Specific?: \n1. Open all\n2. Open Specific\n(Enter 1 or 2)\n''')
             if self.choice == '1' or self.choice == '2':
                 break
             else:
@@ -148,10 +148,15 @@ class Main():
             for number in index:
                 print(str(number + 1) + '. ' + self.finalfile[number])
 
-    # def bugfix(self):
-    #     for files in self.finalfile:
-    #         open = pd.read_csv(self.dir + files)
-
+    def bugfix(self):
+        for files in self.finalfile:
+            df = pd.read_csv((self.dir + '/' + files), skiprows = [1])
+            print(df)
+            df["S2"] = pd.to_numeric(df["S2"])
+            df_filter = df.query('S2 > 10000')
+            print(df_filter)
+            # if df[df["S2"]>10000] == True:
+            #     print(df["S2"])
 
 init = Main()
 init.add_csvs()
@@ -159,3 +164,4 @@ init.show_csvs()
 init.check_params()
 init.file_select()
 init.selected_files()
+init.bugfix()
