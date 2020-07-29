@@ -151,12 +151,11 @@ class Main():
     def bugfix(self):
         for files in self.finalfile:
             df = pd.read_csv((self.dir + '/' + files), skiprows = [1])
-            print(df)
-            df["S2"] = pd.to_numeric(df["S2"])
-            df_filter = df.query('S2 > 10000')
-            print(df_filter)
-            # if df[df["S2"]>10000] == True:
-            #     print(df["S2"])
+            df2 = df[df.S2 > 10000]
+            df_fixed = df2["S2"].div(23000)
+            df.update(df_fixed)
+            df.to_csv(self.dir + '/' + files)
+
 
 init = Main()
 init.add_csvs()
