@@ -13,6 +13,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob # For listing out files in a directory
 import os
+
+stating = True
+choosing = True
+specifying = True
 ###############################################################################
 
 class Main():
@@ -26,20 +30,29 @@ class Main():
         self.choicefile = []
         self.finalfile = []
 
-    def add_csvs(self):
-        while True:
-            dir = input("Paste full path to directory here: ")
-            if os.path.isdir(dir) == True:
-                # Scanning path for files that ends with .csv
-                for files in glob.iglob(os.path.join(dir, "*.csv")):
-                    #print(files)
-                    longname = os.path.basename(files)
-                    self.lst.append(longname)
-                break
-            else:
+        while stating:
+            self.dir = input("Paste full path to directory here: ")
+            if os.path.isdir(self.dir) == False:
                 print('\n')
                 print('Sorry that is not a valid path/directory. Please try again.')
                 continue
+            else:
+                break
+        while choosing:
+            self.choice = input('''Choose all or specific?: \n1. Open all\n2. Open Specific\n(Enter 1 or 2)\n''')
+            if self.choice == '1' or self.choice == '2':
+                break
+            else:
+                print('Sorry that is not a valid option. Please try again.')
+                continue
+
+    def add_csvs(self):
+        if os.path.isdir(self.dir) == True:
+            # Scanning path for files that ends with .csv
+            for files in glob.iglob(os.path.join(self.dir, "*.csv")):
+                #print(files)
+                longname = os.path.basename(files)
+                self.lst.append(longname)
 
     def show_csvs(self):
         print('The following files are found in this directory: ')
@@ -74,56 +87,71 @@ class Main():
         exist_n = set(self.bad_offsetn)
         exist_it = set(self.bad_IT)
 
-        # Narrowing down files to be used
-        choosing = True
-        while choosing:
-            while True:
-                choicetemp = input('\nWhich temperature?: ')
-                if choicetemp in exist_t:
-                    break
-                else:
-                    print('Sorry, data with that temperature does not exist in this directory. Please try again.')
-                    continue
-            while True:
-                choiceoffsetp = input('Which (+) offset?: ')
-                if choiceoffsetp in exist_p:
-                    break
-                else:
-                    print('Sorry, data with that (+) offset does not exist. Please try again.')
-                    continue
-            while True:
-                choiceoffsetn = input('Which (-) offset?: ')
-                if choiceoffsetn in exist_n:
-                    break
-                else:
-                    print('Sorry, data with that (-) offset does not exist. Please try again.')
-                    continue
-            while True:
-                choiceIT = input('Which integration time?: ')
-                if choiceIT in exist_it:
-                    break
-                else:
-                    print('Sorry, data with that integration time does not exist. Please try again.')
-                    continue
-            break
-        #return choicetemp, choiceoffsetp, choiceoffsetn, choiceoffsetp
+        # file processing path depending on choice
+        if self.choice == '1':
+            self.choicefile = self.lst
 
-        for n in range(len(self.params)):
-            if (choicetemp == self.params[n][0]
-            and choiceoffsetp == self.params[n][1]
-            and choiceoffsetn == self.params[n][2]
-            and choiceIT == self.params[n][6]):
+        elif self.choice == '2':
+            # Narrowing down files to be used
+            while specifying:
+                while True:
+                    choicetemp = input('\nWhich temperature?: ')
+                    if choicetemp in exist_t:
+                        break
+                    else:
+                        print('Sorry, data with that temperature does not exist in this directory. Please try again.')
+                        continue
+                while True:
+                    choiceoffsetp = input('Which (+) offset?: ')
+                    if choiceoffsetp in exist_p:
+                        break
+                    else:
+                        print('Sorry, data with that (+) offset does not exist. Please try again.')
+                        continue
+                while True:
+                    choiceoffsetn = input('Which (-) offset?: ')
+                    if choiceoffsetn in exist_n:
+                        break
+                    else:
+                        print('Sorry, data with that (-) offset does not exist. Please try again.')
+                        continue
+                while True:
+                    choiceIT = input('Which integration time?: ')
+                    if choiceIT in exist_it:
+                        break
+                    else:
+                        print('Sorry, data with that integration time does not exist. Please try again.')
+                        continue
+                break
 
-                self.choicefile.append(self.params[n])
+            for n in range(len(self.params)):
+                if (choicetemp == self.params[n][0]
+                and choiceoffsetp == self.params[n][1]
+                and choiceoffsetn == self.params[n][2]
+                and choiceIT == self.params[n][6]):
+
+                    self.choicefile.append(self.params[n])
+
 
     def selected_files(self):
-        for files in self.choicefile:
-            join = '_'.join(files)
-            self.finalfile.append(join)
-        index = range(len(self.finalfile))
-        print('The selected files are: ')
-        for n in index:
-            print(str(n) + '. ' + self.finalfile[n])
+        if self.choice == '1':
+            self.finalfile = self.choicefile
+            print('All files selected!')
+
+        elif self.choice == '2':
+            for files in self.choicefile:
+                join = '_'.join(files)
+                self.finalfile.append(join)
+
+            index = range(len(self.finalfile))
+            print('The selected files are: ')
+            for number in index:
+                print(str(number + 1) + '. ' + self.finalfile[number])
+
+    # def bugfix(self):
+    #     for files in self.finalfile:
+    #         open = pd.read_csv(self.dir + files)
+
 
 init = Main()
 init.add_csvs()
