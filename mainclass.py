@@ -30,6 +30,7 @@ class Main():
         while True:
             dir = input("Paste full path to directory here: ")
             if os.path.isdir(dir) == True:
+                # Scanning path for files that ends with .csv
                 for files in glob.iglob(os.path.join(dir, "*.csv")):
                     #print(files)
                     longname = os.path.basename(files)
@@ -42,13 +43,18 @@ class Main():
 
     def show_csvs(self):
         print('The following files are found in this directory: ')
-        for files in self.lst:
-            print('\t' + files)
+        print('________________________________________________')
+        index = range(len(self.lst))
+
+        for number in index:
+            print(str(number + 1) + '. ' + self.lst[number])
 
     def check_params(self):
+        # Splitting longname into their respective parameters
         for files in self.lst:
             split = files.split('_')
             self.params.append(split)
+        # if for situations where only 1 file exists
         if len(self.params) == 1:
             self.bad_temp.append(self.params[0][0])
             self.bad_offsetp.append(self.params[0][1])
@@ -68,11 +74,11 @@ class Main():
         exist_n = set(self.bad_offsetn)
         exist_it = set(self.bad_IT)
 
+        # Narrowing down files to be used
         choosing = True
         while choosing:
-            # Narrowing down the files to what you want to use
             while True:
-                choicetemp = input('Which temperature?: ')
+                choicetemp = input('\nWhich temperature?: ')
                 if choicetemp in exist_t:
                     break
                 else:
@@ -100,26 +106,27 @@ class Main():
                     print('Sorry, data with that integration time does not exist. Please try again.')
                     continue
             break
+        #return choicetemp, choiceoffsetp, choiceoffsetn, choiceoffsetp
 
-    
+        for n in range(len(self.params) - 1):
+            if (choicetemp == self.params[n][0]
+            and choiceoffsetp == self.params[n][1]
+            and choiceoffsetn == self.params[n][2]
+            and choiceIT == self.params[n][6]):
+
+                self.choicefile.append(self.params[n])
+
+        #print(self.choicefile)
+
+    def selected_files(self):
+        for files in range(len(self.choicefile) - 1):
+            join = '_'.join(self.choicefile[files])
+            self.finalfile.append(join)
+        print(self.finalfile)
+
 init = Main()
 init.add_csvs()
 init.show_csvs()
 init.check_params()
 init.file_select()
-
-
-    # def get_path(self):
-    #     while True:
-    #         dir = input("Paste full path to directory here: ")
-    #         if os.path.isdir(dir) == True:
-    #             for files in glob.iglob(os.path.join(dir, "*.csv")):
-    #                 print(files)
-    #                 longname = os.path.basename(files)
-    #                 self.lst.append(longname)
-    #             return self.lst
-    #             break
-    #         else:
-    #             print('\n')
-    #             print('Sorry that is not a valid path/directory. Please try again.')
-    #             continue
+init.selected_files()
