@@ -108,14 +108,16 @@ class Main():
             break
         #return choicetemp, choiceoffsetp, choiceoffsetn, choiceoffsetp
 
-        for n in range(len(self.params) - 1):
-            if (choicetemp == self.params[n][0]
-            and choiceoffsetp == self.params[n][1]
-            and choiceoffsetn == self.params[n][2]
-            and choiceIT == self.params[n][6]):
+        for n in range(len(self.params) + 1):
+            if (choicetemp == self.params[n-1][0]
+            and choiceoffsetp == self.params[n-1][1]
+            and choiceoffsetn == self.params[n-1][2]
+            and choiceIT == self.params[n-1][6]):
 
-                self.choicefile.append(self.params[n])
-
+                self.choicefile.append(self.params[n-1])
+        # for n in init.params:
+        #     if (choicetemp == n[0] and choiceoffsetp == n[1] and choiceoffsetn == n[2] and choiceIT == n[6]):
+        #         self.choicefile.append(n)
         #print(self.choicefile)
 
     def selected_files(self):
@@ -130,3 +132,7 @@ init.show_csvs()
 init.check_params()
 init.file_select()
 init.selected_files()
+#print(init.params)
+# for n in init.params:
+#     if (choicetemp == n[0] and choiceoffsetp == n[1] and choiceoffsetn == n[2] and choiceIT == n[6]):
+#         self.choicefile.append(n)
