@@ -29,6 +29,9 @@ class Main():
         self.bad_IT = []
         self.choicefile = []
         self.finalfile = []
+        self.temp = []
+        self.uniquenames = []
+        self.avgfiles = []
 
         while stating:
             self.dir = input("Paste full path to directory here: ")
@@ -144,6 +147,7 @@ class Main():
                 self.finalfile.append(join)
 
             index = range(len(self.finalfile))
+            print('\n')
             print('The selected files are: ')
             for number in index:
                 print(str(number + 1) + '. ' + self.finalfile[number])
@@ -156,11 +160,28 @@ class Main():
             df.update(df_fixed)
             df.to_csv(self.dir + '/' + files)
 
+    def average(self):
+        os.makedirs(self.dir + "/master", exist_ok = True) # Creating a folder called "master" that will hold the averaged files
+
+        for files in self.lst:
+            split = files.split('_')
+            pop = split.pop()[-1]
+            self.temp.append(split)
+        self.uniquenames = [list(dataname) for dataname in set(tuple(row) for row in self.temp)]
+
+        for names in self.uniquenames:
+            for params in self.params:
+                if names == params[0:7]:
+
+                    print(params[0:7])
+
 
 init = Main()
 init.add_csvs()
-init.bugfix()
+#init.bugfix()
 init.show_csvs()
 init.check_params()
 init.file_select()
 init.selected_files()
+# print(init.params)
+init.average()
