@@ -149,7 +149,7 @@ class Main():
                 print(str(number + 1) + '. ' + self.finalfile[number])
 
     def bugfix(self):
-        for files in self.finalfile:
+        for files in self.lst:
             df = pd.read_csv((self.dir + '/' + files), skiprows = [1])
             df2 = df[df.S2 > 10000]
             df_fixed = df2["S2"].div(23000)
@@ -159,8 +159,8 @@ class Main():
 
 init = Main()
 init.add_csvs()
+init.bugfix()
 init.show_csvs()
 init.check_params()
 init.file_select()
 init.selected_files()
-init.bugfix()
