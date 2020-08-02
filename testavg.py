@@ -3,7 +3,7 @@ import numpy as np
 import glob
 import os
 
-dir = "/Users/luke/Desktop/testfolder"
+dir = "/Users/luke/Desktop/Python/GitClone/PROJECT-Automate-Research-Process/testfolder"
 
 files = os.listdir(dir)
 files_of_interests = {}
@@ -38,9 +38,17 @@ print(os.path.join(dir, filename))
 # ``\
 
 #df = (pd.read_csv(os.path.join(dir, filename)) for key in files_of_interests for filename in key)
-df = pd.concat([pd.read_csv(os.path.join(dir, filename))
-                for key in files_of_interests for filename in files_of_interests[key]], axis = 0)
+#df = pd.concat([pd.read_csv(os.path.join(dir, filename))
+                #for key in files_of_interests for filename in files_of_interests[key]], axis = 1)
 
-df = df.groupby(['Unnamed: 0', 'Wavelength', 'Wavelength.1']).mean().reset_index()
-df.to_csv(dir + '/try.csv')
-print(df)
+#df = df.groupby(['Unnamed: 0', 'Wavelength', 'Wavelength.1']).mean().reset_index()
+
+for key in files_of_interests:
+    list = []
+    for filename in files_of_interests[key]:
+        list.append(pd.read_csv(os.path.join(dir,filename)))
+        df = pd.concat(list, axis = 1)
+        df = df.drop(['Unnamed: 0', 'Wavelength.1'], axis = 1)
+        df = df.groupby(['Wavelength']).mean().reset_index(inplace = True)
+        print(df)
+        #df.to_csv(os.path.join(dir + '/', f"{filename[:-5]}_master.csv"))
