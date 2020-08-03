@@ -29,26 +29,15 @@ print(os.path.join(dir, filename))
 #         stack_df = stack_df.append(pd.read_csv(os.path.join(dir, filename)))
 #         #stack_df.set_index('Unnamed:0', inplace = True)
     # print(stack_df)
-# dflist = []
-# for key in files_of_interests:
-#     for filename in files_of_interests[key]:
-#         dflist.append(pd.read_csv(os.path.join(dir, filename)) )
-# concat = pd.concat(dflist, axis = 1)
-# concat.to_csv(dir + '/concat.csv')
-# ``\
-
-#df = (pd.read_csv(os.path.join(dir, filename)) for key in files_of_interests for filename in key)
-#df = pd.concat([pd.read_csv(os.path.join(dir, filename))
-                #for key in files_of_interests for filename in files_of_interests[key]], axis = 1)
-
-#df = df.groupby(['Unnamed: 0', 'Wavelength', 'Wavelength.1']).mean().reset_index()
 
 for key in files_of_interests:
     list = []
     for filename in files_of_interests[key]:
-        list.append(pd.read_csv(os.path.join(dir,filename)))
+        list.append(pd.read_csv(os.path.join(dir,filename), index_col = 0))
         df = pd.concat(list, axis = 1)
-        df = df.drop(['Unnamed: 0', 'Wavelength.1'], axis = 1)
-        df = df.groupby(['Wavelength']).mean().reset_index(inplace = True)
+        df = df.drop(['Wavelength.1'], axis = 1)
+        #df = df["S2"].mean()
+        #df = df.groupby(['Wavelength']).mean().reset_index()
+        df = df.groupby(by = df.columns, axis = 1).sum()
         print(df)
-        #df.to_csv(os.path.join(dir + '/', f"{filename[:-5]}_master.csv"))
+        df.to_csv(os.path.join(dir + '/', f"{filename[:-5]}_master.csv"))
