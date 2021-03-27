@@ -15,8 +15,8 @@ for filename in files:
         files_of_interests[key].append(filename)
         print(filename)
 
-print(files_of_interests)
-print(os.path.join(dir, filename))
+#print(files_of_interests)
+#print(os.path.join(dir, filename))
 #wavelength_r = np.arange(1100, 1500, 10)
 # wl_df = pd.DataFrame.from_records([wavelength_r]).T
 # print(wl_df)
@@ -36,8 +36,10 @@ for key in files_of_interests:
         list.append(pd.read_csv(os.path.join(dir,filename), index_col = 0))
         df = pd.concat(list, axis = 1)
         df = df.drop(['Wavelength.1'], axis = 1)
-        #df = df["S2"].mean()
-        #df = df.groupby(['Wavelength']).mean().reset_index()
-        df = df.groupby(by = df.columns, axis = 1).sum()
+        df = df.groupby(['Wavelength']).mean().reset_index()
+        #df = df.groupby(by = df.columns, axis = 1).mean()
+        #df = df.apply(pd.to_numeric, errors = 'ignore')
+        #df = df.div(len(files_of_interests[key]))
         print(df)
-        df.to_csv(os.path.join(dir + '/', f"{filename[:-5]}_master.csv"))
+
+        #df.to_csv(os.path.join(dir + '/', f"{filename[:-5]}_master.csv"))
