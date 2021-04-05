@@ -15,12 +15,8 @@ data_list = os.listdir(path) # Create a list of all files in the folder
 volts = [] # Empty list to store input voltage values 
 c_temp = [] # Empty list to store calculated carrier temperature values 
 dirName = 'processed_plot202'
-# if dirpath.exists() and dirpath.is_dir():
-#     shutil.rmtree(dirpath)
-#     os.mkdir('processed_plots')
-# else: 
-#     os.mkdir('processed_plots')
-# Create target Directory if don't exist
+
+# Making new directory to put plots created
 if not os.path.exists(dirName):
     os.mkdir(dirName)
     print("Directory " , dirName ,  " Created ")
@@ -87,8 +83,6 @@ Final Fit Parameters:
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
 
 # Beginning Script 
-# looping = True
-# while looping: 
 for files in data_list: 
     if (files == ".DS_Store"): 
         pass 
