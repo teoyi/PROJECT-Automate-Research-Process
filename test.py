@@ -31,7 +31,7 @@ def guess_check(title_str, xdata, ydata, label1, label2, plot_title):
 
     # Curve fit range and weight:
     E = np.linspace(np.min(xdata), np.max(xdata), len(xdata))
-    weight_func = np.exp(E*6) #1/(np.sqrt(np.exp(-E*18)))
+    weight_func = np.exp(E*9) 
 
     popt1, pcov1 = curve_fit(first_pass, xdata, ydata, maxfev = 10000, sigma = weight_func, absolute_sigma=True) 
     #print(popt1)
@@ -89,30 +89,31 @@ for files in data_list:
             volts.append(components[1]) # Append input voltage
             latticeT = int(components[0]) # Reading from long name 
             bandE = 0.42+0.625*comp*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2 * comp - (4.19*10**-4 * latticeT**2)/(latticeT+271) + 0.475*comp**2 # in eV, bandgap energy for InGaAs. 
-            # Creation of dataframe
-            
-                # out: Index(['Wavelength', 'S2c', 'Wavelength.1', 'S2'], dtype='object')
-            print(len(col))
-            #if (len(col) != 4):
-            #     if col
-            #     print("The .csv file has incorrect columns")
-            #     break
-            # else: 
-            #     pass 
-            # # Creating new df to not mess with original 
-            # new_df = pd.DataFrame() 
-            # new_df[col[0]] = test_df[col[0]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
-            # new_df[col[1]] = test_df[col[1]].iloc[1:] # S2c 
-            # new_df[col[3]] = test_df[col[3]].iloc[1:] # S2
-            # new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
 
-            # # Creating additional columns to be used for further calculations 
-            # new_df['Photon Energy'] = (h*c)/(new_df[col[0]]*10**-9)
-            # new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+            # Creating new df to not mess with original 
+            new_df = pd.DataFrame() 
+            new_df[col[0]] = test_df[col[0]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
+            new_df[col[1]] = test_df[col[1]].iloc[1:] # S2c 
+            new_df[col[3]] = test_df[col[3]].iloc[1:] # S2
+            new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
 
-            # # dLambda conversion to dE 
-            # scale = 1240
-            # new_df['dE_Conv S2c'] =  new_df[col[1]] * new_df[col[0]] / scale
-            # new_df['dE_Conv S2'] = new_df[col[3]] * new_df[col[0]] / scale
+            # Creating additional columns to be used for further calculations 
+            new_df['Photon Energy'] = (h*c)/(new_df[col[0]]*10**-9)
+            new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+
+            # dLambda conversion to dE 
+            scale = 1240
+            new_df['dE_Conv S2c'] =  new_df[col[1]] * new_df[col[0]] / scale
+            new_df['dE_Conv S2'] = new_df[col[3]] * new_df[col[0]] / scale
+
+            # Applying curve fit function 
+            # DC-offset Correction 
+            dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check('DC-Offset Calculations', new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', 'DC-Offset Fit')
+            # Since dLambda to dE correction is already done with another column, we can skip straight to multiplier correction 
+            # Multiplier Correction 
+            new_df['Corrected S2'] = (new_df['dE_Conv S2'] - dc_fita) * new_df['Multiplier']
+            guessb, guessc, final_a, final_b, final_c, fig = guess_check('Final Fit Calculation', new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', 'Final Fit')
+            e_temp = 1/(k*final_b)
+            print(f"The carrier temperature is {e_temp} K.")
 
 
