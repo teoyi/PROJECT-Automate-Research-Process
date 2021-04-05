@@ -73,7 +73,7 @@ Final Fit Parameters:
 # looping = True
 # while looping: 
 for files in data_list: 
-    if (files == ".DS_Store" or files != data_list[3]): 
+    if (files == ".DS_Store"): 
         pass 
     else: 
         print(f'Currently Processing: {files}')
@@ -117,8 +117,8 @@ for files in data_list:
         guessb, guessc, final_a, final_b, final_c, fig = guess_check('Final Fit Calculation', new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', 'Final Fit', bandE)
         e_temp = 1/(k*final_b)
         print(f"The carrier temperature is {e_temp} K.")
-        print(new_df['Multiplier'])
-        print(new_df['dE_Conv S2c'])
-        print(new_df['dE_Conv S2'])
+        # print(new_df['Multiplier'])
+        # print(new_df['dE_Conv S2c'])
+        # print(new_df['dE_Conv S2'])
 
 
