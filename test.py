@@ -87,7 +87,7 @@ for files in data_list:
         # else: 
         components = files.split("_")
         volts.append(components[1]) # Append input voltage
-        latticeT = float(components[0]) # Reading from long name 
+        latticeT = float(components[0]) + 273.15 # Reading from long name 
         bandE = 0.42+0.625*comp*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2 * comp - (4.19*10**-4 * latticeT**2)/(latticeT+271) + 0.475*comp**2 # in eV, bandgap energy for InGaAs. 
         print(latticeT)
 
