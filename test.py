@@ -4,15 +4,31 @@ import pandas as pd
 import os
 import os.path
 from scipy.optimize import curve_fit
+import shutil
 
 # Loading file, and obtaining long name components 
-path = "./testfolder2"
+path = "./202"
 data_list = os.listdir(path) # Create a list of all files in the folder
 #print(data_list)
 
 # Empty list will be appended with the respective inputs in the order they are listed in the folder 
 volts = [] # Empty list to store input voltage values 
 c_temp = [] # Empty list to store calculated carrier temperature values 
+dirName = 'processed_plot202'
+# if dirpath.exists() and dirpath.is_dir():
+#     shutil.rmtree(dirpath)
+#     os.mkdir('processed_plots')
+# else: 
+#     os.mkdir('processed_plots')
+# Create target Directory if don't exist
+if not os.path.exists(dirName):
+    os.mkdir(dirName)
+    print("Directory " , dirName ,  " Created ")
+else:    
+    print("Directory " , dirName ,  " already exists")
+    print("Recreating directory...")
+    shutil.rmtree(dirName)
+    os.mkdir(dirName)
 
 # Constants to be used 
 h = 4.1357 * 10 ** -15 # Plancks constant in eV*s
@@ -66,7 +82,8 @@ Final Fit Parameters:
     plt.yscale('log')
     plt.title(plot_title)
     plt.legend()
-    plt.show()
+    plt.ioff()
+    plt.savefig(f"./{dirName}/{plot_title}")
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
 
 # Beginning Script 
@@ -109,12 +126,12 @@ for files in data_list:
 
         # Applying curve fit function 
         # DC-offset Correction 
-        dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check('DC-Offset Calculations', new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', 'DC-Offset Fit', bandE)
+        dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check('DC-Offset Calculations', new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', components[0] + '_' + components[1] + '_' +'DC-Offset Fit', bandE)
         # Since dLambda to dE correction is already done with another column, we can skip straight to multiplier correction 
 
         # Multiplier Correction 
         new_df['Corrected S2'] = (new_df['dE_Conv S2'] - dc_fita) * new_df['Multiplier']
-        guessb, guessc, final_a, final_b, final_c, fig = guess_check('Final Fit Calculation', new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', 'Final Fit', bandE)
+        guessb, guessc, final_a, final_b, final_c, fig = guess_check('Final Fit Calculation', new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', components[0] + '_' + components[1] + '_' +'final fit', bandE)
         e_temp = 1/(k*final_b)
         print(f"The carrier temperature is {e_temp} K.")
         # print(new_df['Multiplier'])
