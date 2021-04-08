@@ -13,7 +13,6 @@ path = "./avgtest"
 data_file = os.listdir(path) # Create a list of all files in the folder
 
 files_dict = {} 
-files_count = {} 
 
 # Filling up files_dict dictionary to contain list of files names 
 for files in data_file: 
@@ -21,10 +20,6 @@ for files in data_file:
         key = files[:-5]
         files_dict.setdefault(key, [])
         files_dict[key].append(files)
-
-# Filling up files_count dictionary to keep track of number of file names with the same parameters
-for key, value in files_dict.items(): 
-    files_count[key] = len(value)
 
 tb_avg = [] # To be averaged -> file names 
 for key, value in files_dict.items(): 
