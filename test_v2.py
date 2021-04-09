@@ -95,17 +95,18 @@ data_list = os.listdir(path2)
 # Empty list will be appended with the respective inputs in the order they are listed in the folder 
 volts = [] # Empty list to store input voltage values 
 c_temp = [] # Empty list to store calculated carrier temperature values 
-dirName2 = 'processed_plot'
 
 # Making new directory to put plots created
-if not os.path.exists(dirName2):
-    os.mkdir(dirName2)
+print(os.getcwd())
+dirName2 = 'processed_plot'
+if not os.path.exists(path2+'/'+dirName2):
+    os.mkdir(path2+'/'+dirName2)
     print("\nDirectory " , dirName2 ,  " Created ")
 else:    
     print("\nDirectory " , dirName2 ,  " already exists")
     print("Recreating directory...")
-    shutil.rmtree(dirName2)
-    os.mkdir(dirName2)
+    shutil.rmtree(path2+'/'+dirName2)
+    os.mkdir(path2+'/'+dirName2)
 
 # Constants to be used 
 h = 4.1357 * 10 ** -15 # Plancks constant in eV*s
@@ -160,7 +161,8 @@ Final Fit Parameters:
     plt.title(plot_title)
     plt.legend()
     plt.ioff()
-    plt.savefig(f"./{dirName}/{plot_title}")
+    plt.savefig(path2 + f"/{dirName2}/{plot_title}")
+    plt.close(fig)
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
 
 # Beginning Script 
@@ -168,7 +170,7 @@ for files in data_list:
     if (files == ".DS_Store"): 
         pass 
     else: 
-        print(f'Currently Processing: {files}')
+        print(f'\nCurrently Processing: {files}')
         # Reading .csv files 
         test_df = pd.read_csv(path2+f"/{files}")
         col = test_df.columns
@@ -179,20 +181,37 @@ for files in data_list:
         bandE = 0.42+0.625*comp*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2 * comp - (4.19*10**-4 * latticeT**2)/(latticeT+271) + 0.475*comp**2 # in eV, bandgap energy for InGaAs. 
 
         # Creating new df to not mess with original 
-        new_df = pd.DataFrame() 
-        new_df[col[0]] = test_df[col[0]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
-        new_df[col[1]] = test_df[col[1]].iloc[1:] # S2c 
-        new_df[col[3]] = test_df[col[3]].iloc[1:] # S2
-        new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
+        if len(col) == 4: 
+            new_df = pd.DataFrame() 
+            new_df[col[0]] = test_df[col[0]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
+            new_df[col[1]] = test_df[col[1]].iloc[1:] # S2c 
+            new_df[col[3]] = test_df[col[3]].iloc[1:] # S2
+            new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
+            
+            # Creating additional columns to be used for further calculations 
+            new_df['Photon Energy'] = (h*c)/(new_df[col[0]]*10**-9)
+            new_df['Multiplier'] = new_df['S2c']/new_df['S2']
 
-        # Creating additional columns to be used for further calculations 
-        new_df['Photon Energy'] = (h*c)/(new_df[col[0]]*10**-9)
-        new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+            # dLambda conversion to dE 
+            scale = 1240
+            new_df['dE_Conv S2c'] =  new_df[col[1]] * new_df[col[0]] / scale
+            new_df['dE_Conv S2'] = new_df[col[3]] * new_df[col[0]] / scale
 
-        # dLambda conversion to dE 
-        scale = 1240
-        new_df['dE_Conv S2c'] =  new_df[col[1]] * new_df[col[0]] / scale
-        new_df['dE_Conv S2'] = new_df[col[3]] * new_df[col[0]] / scale
+        elif len(col) == 5: 
+            new_df = pd.DataFrame() 
+            new_df[col[1]] = test_df[col[1]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
+            new_df[col[2]] = test_df[col[2]].iloc[1:] # S2c 
+            new_df[col[4]] = test_df[col[4]].iloc[1:] # S2
+            new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
+
+            # Creating additional columns to be used for further calculations 
+            new_df['Photon Energy'] = (h*c)/(new_df[col[1]]*10**-9)
+            new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+
+            # dLambda conversion to dE 
+            scale = 1240
+            new_df['dE_Conv S2c'] =  new_df[col[2]] * new_df[col[1]] / scale
+            new_df['dE_Conv S2'] = new_df[col[4]] * new_df[col[1]] / scale
 
         # Applying curve fit function 
         # DC-offset Correction 
