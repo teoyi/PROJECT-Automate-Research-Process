@@ -125,7 +125,7 @@ def guess_check(title_str, xdata, ydata, label1, label2, plot_title, bandE):
 
     # Curve fit range and weight:
     E = np.linspace(np.min(xdata), np.max(xdata), len(xdata))
-    weight_func = np.exp(E*6)
+    weight_func = np.exp(-E*12)
 
     popt1, pcov1 = curve_fit(first_pass, xdata, ydata, maxfev = 10000, sigma = weight_func, absolute_sigma=True) 
     #print(popt1)
