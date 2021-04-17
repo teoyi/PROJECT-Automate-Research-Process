@@ -8,7 +8,6 @@ import os
 import os.path
 import shutil
 
-
 '''
 First section contains file manipulation to take into account of multiple runs of the experiment 
 '''
@@ -45,9 +44,9 @@ dirName = 'final_data'
 # Making new directory to put processed data 
 if not os.path.exists(dirName):
     os.mkdir(dirName)
-    print("\nDirectory " , dirName ,  " Created ")
+    print("\nDirectory **" , dirName ,  "** Created ")
 else:    
-    print("\nDirectory " , dirName ,  " already exists")
+    print("\nDirectory **" , dirName ,  "** already exists")
     print("Recreating directory...")
     shutil.rmtree(dirName)
     os.mkdir(dirName)
@@ -97,13 +96,13 @@ volts = [] # Empty list to store input voltage values
 c_temp = [] # Empty list to store calculated carrier temperature values 
 
 # Making new directory to put plots created
-print(os.getcwd())
+#print(os.getcwd())
 dirName2 = 'processed_plot'
 if not os.path.exists(path2+'/'+dirName2):
     os.mkdir(path2+'/'+dirName2)
-    print("\nDirectory " , dirName2 ,  " Created ")
+    print("\nDirectory **" , dirName2 ,  "** Created ")
 else:    
-    print("\nDirectory " , dirName2 ,  " already exists")
+    print("\nDirectory **" , dirName2 ,  "** already exists")
     print("Recreating directory...")
     shutil.rmtree(path2+'/'+dirName2)
     os.mkdir(path2+'/'+dirName2)
@@ -138,26 +137,26 @@ def guess_check(title_str, xdata, ydata, label1, label2, plot_title, bandE):
     pfinal_b = popt2[1]
     pfinal_c = popt2[2] 
 
-    print(f''' 
-{title_str}
-_____________________________________________
+#     print(f''' 
+# {title_str}
+# _____________________________________________
 
-Initial Guess Parameters: 
-    b = {popt1[0]}
-    c = {popt1[1]}
+# Initial Guess Parameters: 
+#     b = {popt1[0]}
+#     c = {popt1[1]}
 
-Final Fit Parameters: 
-    a = {popt2[0]}
-    b = {popt2[1]}
-    c = {popt2[2]}
-    ''')
+# Final Fit Parameters: 
+#     a = {popt2[0]}
+#     b = {popt2[1]}
+#     c = {popt2[2]}
+#     ''')
 
     fig = plt.figure()
     plt.plot(xdata, ydata, 'o', label=label1)
     plt.plot(xdata, second_pass(xdata, *popt2), '-', label=label2)
     plt.ylabel('Emission Intensity (a.u.)')
     plt.xlabel('Photon Energy (eV)')
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.title(plot_title)
     plt.legend()
     plt.ioff()
@@ -170,7 +169,7 @@ for files in data_list:
     if (files == ".DS_Store"): 
         pass 
     else: 
-        print(f'\nCurrently Processing: {files}')
+        #print(f'\nCurrently Processing: {files}')
         # Reading .csv files 
         test_df = pd.read_csv(path2+f"/{files}")
         col = test_df.columns
@@ -218,8 +217,20 @@ for files in data_list:
         dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check('DC-Offset Calculations', new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', components[0] + '_' + components[1] + '_' +'DC-Offset Fit', bandE)
         # Since dLambda to dE correction is already done with another column, we can skip straight to multiplier correction 
 
+        
         # Multiplier Correction 
         new_df['Corrected S2'] = (new_df['dE_Conv S2'] - dc_fita) * new_df['Multiplier']
         guessb, guessc, final_a, final_b, final_c, fig = guess_check('Final Fit Calculation', new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', components[0] + '_' + components[1] + '_' +'final fit', bandE)
         e_temp = 1/(k*final_b)
-        print(f"The carrier temperature is {e_temp} K.")
+        c_temp.append(e_temp)
+        print(f"\nFor {files} the carrier temperature is {e_temp} K.")
+        # print(f"The carrier temperature is {e_temp} K.")
+
+# Checking final data to be plotted for carrier temp plot 
+for volt in volts: 
+    if volt[0] == 'p':
+        volt = volt[1:]
+    elif volt[0] == 'n': 
+        pass 
+print(volts)
+# print(c_temp)
