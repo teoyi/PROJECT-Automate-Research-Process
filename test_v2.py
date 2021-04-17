@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt 
 from scipy.optimize import curve_fit
+import itertools
 # OS manipulation import 
 import os
 import os.path
@@ -76,12 +77,17 @@ check_list = os.listdir(path_check)
 check_str1 = "Index(['Unnamed: 0', 'Wavelength', 'S2c', 'Wavelength.1', 'S2'], dtype='object')"
 check_str2 = "Index(['Wavelength', 'S2c', 'Wavelength.1', 'S2'], dtype='object')"
 for files in check_list: 
-    dummy2 = pd.read_csv(path_check + f'/{files}')
-    if str(dummy2.columns) == check_str1 or str(dummy2.columns) == check_str2:
-        pass
-    else:
+    # print(files[-1])
+    if files[-1] == '1':
         os.remove(path_check+f'/{files}')
-        print(f'\n{files} has been removed for not having the correct structure/format.')
+        print(f'\n{files} has been removed for having integration time of 1.')
+    else: 
+        dummy2 = pd.read_csv(path_check + f'/{files}')
+        if str(dummy2.columns) == check_str1 or str(dummy2.columns) == check_str2:
+            pass
+        else:
+            os.remove(path_check+f'/{files}')
+            print(f'\n{files} has been removed for not having the correct structure/format.')
 
 
 '''
@@ -227,10 +233,22 @@ for files in data_list:
         # print(f"The carrier temperature is {e_temp} K.")
 
 # Checking final data to be plotted for carrier temp plot 
-for volt in volts: 
-    if volt[0] == 'p':
-        volt = volt[1:]
-    elif volt[0] == 'n': 
-        pass 
+for i in np.arange(0, len(volts)):
+    if volts[i][0] == 'p':
+        volts[i] = volts[i][1:]
+    elif volt[i][0] == 'n': 
+        volts[i] = '-' + volts[i][1:]
 print(volts)
-# print(c_temp)
+# for i in np.arange(0, len(c_temp)):
+#     c_temp[i] = c_temp[i]-273.15 
+print(c_temp)
+volt_int = map(int, volts)
+# lists = zip(*sorted(zip(*(volts, c_temp))))
+new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
+
+print(new_x)
+print(new_y)
+plt.scatter(new_x, new_y)
+plt.axhline(475.15)
+plt.savefig(path2 + f"/{dirName2}/c_temp.png")
+plt.show() 
