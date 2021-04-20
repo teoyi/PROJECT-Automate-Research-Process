@@ -106,7 +106,7 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/1720"
+path1 = "./updated_test/995"
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
 files_dict = {} 
@@ -296,11 +296,12 @@ for i in np.arange(0, len(volts)):
     elif volts[i][0] == 'n': 
         volts[i] = '-' + volts[i][1:]
 print(volts)
-print(c_temp)
 volt_int = list(map(float, volts))
 otemp_int = list(map(float, o_temp))
 for i in np.arange(0, len(c_temp)):
     c_temp[i] = c_temp[i]-273.15
+
+print(c_temp)
 avg_temp = sum(c_temp)/len(c_temp)
 latt_temp = int(sum(otemp_int)/len(otemp_int))
 new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
