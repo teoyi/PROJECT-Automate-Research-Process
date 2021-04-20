@@ -9,7 +9,7 @@ import os
 import os.path
 import shutil
 
-rt_band = input("Eg at room temp:")
+#rt_band = input("Eg at room temp:")
 
 '''
 **** SECTION 1 ****
@@ -101,5 +101,104 @@ def guess_check(xdata, ydata, label1, label2, plot_title, bandE):
     plt.savefig(path2 + f"/{dirName2}/{plot_title}")
     plt.close(fig)
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
+
+'''
+**** SECTION 2 ****
+This section contains script for file manipulation. 
+File manipulation includes: 
+    - Reading files
+    - Creating/Removing directories
+    - Editing .csv file contents 
+    - Check of processed file structure and integrity 
+    - Saving final file contents to new directory  
+'''
+print(f"Working from {os.getcwd()}")
+
+# Loading file, and obtaining long name components 
+path1 = "./updated_test/995"
+data_file = os.listdir(path1) # Create a list of all files in the folder
+
+files_dict = {} 
+# Filling up files_dict dictionary to contain list of files names 
+for files in data_file: 
+    if files[-4:] == '.csv':
+        key = files[:-5]
+        files_dict.setdefault(key, [])
+        files_dict[key].append(files)
+
+tb_avg = [] # To be averaged -> file names 
+for key, value in files_dict.items(): 
+    if len(value) > 1: 
+        tb_avg.append([key,len(value)])
+
+# Multiple runs contains end letters of A, B, C, D ,E. 5 maximum 
+end = ['A.csv', 'B.csv', 'C.csv', 'D.csv', 'E.csv']
+    
+print("Files that needs to be concatenated (file, count):")
+for files in tb_avg:
+    print(f'- {files[0]}, {files[1]}')
+
+# Making a new file within the folder that contains all the data
+os.chdir(path1)
+dirName = 'final_data'
+
+# Making new directory to put processed data 
+if not os.path.exists(dirName):
+    os.mkdir(dirName)
+    print("\nDirectory **" , dirName ,  "** Created ")
+else:    
+    print("\nDirectory **" , dirName ,  "** already exists")
+    print("Recreating directory...")
+    shutil.rmtree(dirName)
+    os.mkdir(dirName)
+
+print('\nTransferring files with count of 1...')
+for key, value in files_dict.items(): 
+    if len(value) == 1: 
+        dummy1 = pd.read_csv(value[0])
+        dummy1.to_csv(f'./{dirName}/{value[0][:-4]}')
+print('Done!')
+
+for i in np.arange(0, len(tb_avg)): 
+    print(f'\nProcessing {tb_avg[i][0]}')
+    file_list = [] 
+    for j in np.arange(0, int(tb_avg[i][1])): 
+        file_list.append(tb_avg[i][0] + end[j])
+    working = pd.concat([pd.read_csv(f) for f in file_list], ignore_index=False, axis = 0)
+    working = working.drop(index=0)
+    working = working.astype('float64')
+    working.to_csv(f'./{dirName}/{file_list[0][:-6]}', index= False)
+    print('Done!')
+
+# Final check of data quality and structure 
+print('\n*** Checking processed data integrity ***')
+path_check = f'./{dirName}'
+check_list = os.listdir(path_check)
+check_str1 = "Index(['Unnamed: 0', 'Wavelength', 'S2c', 'Wavelength.1', 'S2'], dtype='object')"
+check_str2 = "Index(['Wavelength', 'S2c', 'Wavelength.1', 'S2'], dtype='object')"
+response = input('Do you want to process files with integration time = 1s? (y/n): ').lower()
+
+if (response == 'y'):
+    print("Files with integration time of 1 will be kept.")
+    for files in check_list: 
+        dummy2 = pd.read_csv(path_check + f'/{files}')
+        if str(dummy2.columns) == check_str1 or str(dummy2.columns) == check_str2:
+            pass
+        else:
+            os.remove(path_check+f'/{files}')
+            print(f'\n{files} has been removed for not having the correct structure/format.')
+else: 
+    print("Files with integration time of 1 will be removed.")
+    for files in check_list: 
+        if files[-1] == '1':
+            os.remove(path_check+f'/{files}')
+            print(f'\n{files} has been removed for having integration time of 1.')
+        else: 
+            dummy2 = pd.read_csv(path_check + f'/{files}')
+            if str(dummy2.columns) == check_str1 or str(dummy2.columns) == check_str2:
+                pass
+            else:
+                os.remove(path_check+f'/{files}')
+                print(f'\n{files} has been removed for not having the correct structure/format.')
 
 
