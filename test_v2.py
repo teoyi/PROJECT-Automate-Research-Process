@@ -97,10 +97,6 @@ Second section deals with the curve fitting processes
 path2 = f"./{dirName}"
 data_list = os.listdir(path2) 
 
-# Empty list will be appended with the respective inputs in the order they are listed in the folder 
-volts = [] # Empty list to store input voltage values 
-c_temp = [] # Empty list to store calculated carrier temperature values 
-
 # Making new directory to put plots created
 #print(os.getcwd())
 dirName2 = 'processed_plot'
@@ -158,17 +154,23 @@ def guess_check(title_str, xdata, ydata, label1, label2, plot_title, bandE):
 #     ''')
 
     fig = plt.figure()
-    plt.plot(xdata, ydata, 'o', label=label1)
-    plt.plot(xdata, second_pass(xdata, *popt2), '-', label=label2)
+    plt.plot(xdata, ydata, 'o', label=label1, color='black')
+    plt.plot(xdata, second_pass(xdata, *popt2), '-', label=label2, color='red')
     plt.ylabel('Emission Intensity (a.u.)')
     plt.xlabel('Photon Energy (eV)')
     # plt.yscale('log')
     plt.title(plot_title)
-    plt.legend()
+    plt.legend(frameon=False)
     plt.ioff()
     plt.savefig(path2 + f"/{dirName2}/{plot_title}")
     plt.close(fig)
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
+
+# Empty list will be appended with the respective inputs in the order they are listed in the folder 
+volts = [] # Empty list to store input voltage values 
+c_temp = [] # Empty list to store calculated carrier temperature values 
+o_temp = [] # Empty list to store lattice temp from long name  
+
 
 # Beginning Script 
 for files in data_list: 
@@ -181,6 +183,7 @@ for files in data_list:
         col = test_df.columns
 
         components = files.split("_")
+        o_temp.append(components[0])
         volts.append(components[1]) # Append input voltage
         latticeT = float(components[0]) + 273.15 # Reading from long name 
         bandE = 0.42+0.625*comp*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2 * comp - (4.19*10**-4 * latticeT**2)/(latticeT+271) + 0.475*comp**2 # in eV, bandgap energy for InGaAs. 
@@ -241,16 +244,23 @@ for i in np.arange(0, len(volts)):
 print(volts)
 print(c_temp)
 volt_int = list(map(float, volts))
+otemp_int = list(map(float, o_temp))
 for i in np.arange(0, len(c_temp)):
     c_temp[i] = c_temp[i]-273.15
-
+avg_temp = sum(c_temp)/len(c_temp)
+latt_temp = int(sum(otemp_int)/len(otemp_int))
 new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
 # print(new_x)
 # print(new_y)
-plt.scatter(new_x, new_y, color='black', marker='s')
-plt.axhline(475.15, ls='--', color='black')
-plt.ylabel('Carrier Temperature (K)')
+fig = plt.figure()
+plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
+plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
+plt.text(17, latt_temp+7, f'{latt_temp}')
+plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
+plt.text(17, avg_temp+7, f'{round(avg_temp,2)}', color='red')
+plt.ylabel('Carrier Temperature ($^\circ$C)')
 plt.xlabel('Voltage (mV)')
+plt.legend(frameon=False)
 plt.ioff()
 plt.savefig(path2 + f"/{dirName2}/c_temp.png")
 plt.close(fig)
