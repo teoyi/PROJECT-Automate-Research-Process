@@ -89,7 +89,7 @@ def guess_check(xdata, ydata, label1, label2, plot_title, bandE):
     plt.title(plot_title)
     plt.legend(frameon=False)
     plt.ioff()
-    plt.savefig(path2 + f"/{dirName2}/{plot_title}", bbox_inches='tight')
+    plt.savefig(path2 + f"/{dirName2}/{plot_title}.png", bbox_inches='tight')
     plt.close(fig)
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
 
@@ -106,7 +106,7 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/995"
+path1 = "./updated_test/1720"
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
 files_dict = {} 
