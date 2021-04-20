@@ -15,7 +15,7 @@ First section contains file manipulation to take into account of multiple runs o
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./avgtest"
+path1 = "./updated_test/995"
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
 files_dict = {} 
@@ -236,19 +236,22 @@ for files in data_list:
 for i in np.arange(0, len(volts)):
     if volts[i][0] == 'p':
         volts[i] = volts[i][1:]
-    elif volt[i][0] == 'n': 
+    elif volts[i][0] == 'n': 
         volts[i] = '-' + volts[i][1:]
 print(volts)
-# for i in np.arange(0, len(c_temp)):
-#     c_temp[i] = c_temp[i]-273.15 
 print(c_temp)
-volt_int = map(int, volts)
-# lists = zip(*sorted(zip(*(volts, c_temp))))
-new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
+volt_int = list(map(float, volts))
+for i in np.arange(0, len(c_temp)):
+    c_temp[i] = c_temp[i]-273.15
 
-print(new_x)
-print(new_y)
-plt.scatter(new_x, new_y)
-plt.axhline(475.15)
+new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
+# print(new_x)
+# print(new_y)
+plt.scatter(new_x, new_y, color='black', marker='s')
+plt.axhline(475.15, ls='--', color='black')
+plt.ylabel('Carrier Temperature (K)')
+plt.xlabel('Voltage (mV)')
+plt.ioff()
 plt.savefig(path2 + f"/{dirName2}/c_temp.png")
-plt.show() 
+plt.close(fig)
+
