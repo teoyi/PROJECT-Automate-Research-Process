@@ -9,21 +9,12 @@ import os
 import os.path
 import shutil
 
-#rt_band = input("Eg at room temp:")
-
 '''
 **** SECTION 1 ****
 This section contains mathematical functions to calculate values to be used.
 1. Composition Solver 
 2. Curve fit function 
 '''
-# Using python to solve for quadratic equation 
-# Note that Eg is found through the excel sheet 
-# Eg is found at ambient temperature of 298K 
-# quad_E  = 0.475*x**2 + (0.625*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2)*x + (0.42 - (4.19*10**-4 * latticeT**2)/(latticeT+271) - rt_band) 
-# This quadratic equation is taken from http://www.ioffe.ru/SVA/NSM/Semicond/GaInAs/bandstr.html
-
-
 def comp_solver(rt_band):
     '''
     Used to solve a quadratic equation to determine composition of semiconductor material.
@@ -51,7 +42,7 @@ def comp_solver(rt_band):
         print(f"The composition is: {ans2.real}.")
         return ans2.real 
     else: 
-        print(f"The composition is: {ans10.real}.")
+        print(f"The composition is: {ans1.real}.")
         return ans1.real 
 
 def guess_check(xdata, ydata, label1, label2, plot_title, bandE): 
@@ -98,7 +89,7 @@ def guess_check(xdata, ydata, label1, label2, plot_title, bandE):
     plt.title(plot_title)
     plt.legend(frameon=False)
     plt.ioff()
-    plt.savefig(path2 + f"/{dirName2}/{plot_title}")
+    plt.savefig(path2 + f"/{dirName2}/{plot_title}", bbox_inches='tight')
     plt.close(fig)
     return p0_b, p0_c, pfinal_a, pfinal_b, pfinal_c, fig
 
@@ -201,4 +192,129 @@ else:
                 os.remove(path_check+f'/{files}')
                 print(f'\n{files} has been removed for not having the correct structure/format.')
 
+# Loading new file, and obtaining long name components 
+path2 = f"./{dirName}"
+data_list = os.listdir(path2) 
 
+# Making new directory to put plots created
+dirName2 = 'processed_plot'
+if not os.path.exists(path2+'/'+dirName2):
+    os.mkdir(path2+'/'+dirName2)
+    print("\nDirectory **" , dirName2 ,  "** Created ")
+else:    
+    print("\nDirectory **" , dirName2 ,  "** already exists")
+    print("Recreating directory...")
+    shutil.rmtree(path2+'/'+dirName2)
+    os.mkdir(path2+'/'+dirName2)
+
+'''
+**** SECTION 3 ****
+This section will contains the script to process data to return carrier temperature. 
+Plot of carrier temperature against input voltage will be made and saved into the same folder, "processed_plot"
+'''
+# Using user input to calculate for composition 
+rt_band = float(input("Eg at room temp: "))
+
+# Constants to be used 
+h = 4.1357 * 10 ** -15 # Plancks constant in eV*s
+c = 2.99792458 * 10 ** 8 # Speed of light in m/s 
+k = 8.617333262145 * 10 ** -5 # Boltzmann constant in eV/K
+comp = comp_solver(rt_band) # Composition for InGaAs 
+
+# Empty list will be appended with the respective inputs in the order they are listed in the folder 
+volts = [] # Store input voltage values 
+c_temp = [] # Store calculated carrier temperature values 
+o_temp = [] # Store lattice temp from long name  
+
+# Beginning Script 
+for files in data_list: 
+    if (files == ".DS_Store"): 
+        pass 
+    else: 
+        #print(f'\nCurrently Processing: {files}')
+        # Reading .csv files 
+        test_df = pd.read_csv(path2+f"/{files}")
+        col = test_df.columns
+
+        components = files.split("_")
+        o_temp.append(components[0])
+        volts.append(components[1]) # Append input voltage
+        latticeT = float(components[0]) + 273.15 # Reading from long name 
+        bandE = 0.42+0.625*comp*(5.8/(latticeT+300)-4.19/(latticeT+271))*10**-4 * latticeT**2 * comp - (4.19*10**-4 * latticeT**2)/(latticeT+271) + 0.475*comp**2 # in eV, bandgap energy for InGaAs. 
+
+        # Creating new df to not mess with original 
+        if len(col) == 4: 
+            new_df = pd.DataFrame() 
+            new_df[col[0]] = test_df[col[0]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
+            new_df[col[1]] = test_df[col[1]].iloc[1:] # S2c 
+            new_df[col[3]] = test_df[col[3]].iloc[1:] # S2
+            new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
+            
+            # Creating additional columns to be used for further calculations 
+            new_df['Photon Energy'] = (h*c)/(new_df[col[0]]*10**-9)
+            new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+
+            # dLambda conversion to dE 
+            scale = 1240
+            new_df['dE_Conv S2c'] =  new_df[col[1]] * new_df[col[0]] / scale
+            new_df['dE_Conv S2'] = new_df[col[3]] * new_df[col[0]] / scale
+
+        elif len(col) == 5: 
+            new_df = pd.DataFrame() 
+            new_df[col[1]] = test_df[col[1]].iloc[1:] # Wavelength, using iloc to remove non numerical value 
+            new_df[col[2]] = test_df[col[2]].iloc[1:] # S2c 
+            new_df[col[4]] = test_df[col[4]].iloc[1:] # S2
+            new_df = new_df.astype(float) # Converting data values to numeric from strings, prep for parse in plot
+
+            # Creating additional columns to be used for further calculations 
+            new_df['Photon Energy'] = (h*c)/(new_df[col[1]]*10**-9)
+            new_df['Multiplier'] = new_df['S2c']/new_df['S2']
+
+            # dLambda conversion to dE 
+            scale = 1240
+            new_df['dE_Conv S2c'] =  new_df[col[2]] * new_df[col[1]] / scale
+            new_df['dE_Conv S2'] = new_df[col[4]] * new_df[col[1]] / scale
+
+        # Applying curve fit function 
+        # DC-offset Correction 
+        dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check(new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', components[0] + '_' + components[1] + '_' +'DC-Offset Fit', bandE)
+        # Since dLambda to dE correction is already done with another column, we can skip straight to multiplier correction 
+
+        
+        # Multiplier Correction 
+        new_df['Corrected S2'] = (new_df['dE_Conv S2'] - dc_fita) * new_df['Multiplier']
+        guessb, guessc, final_a, final_b, final_c, fig = guess_check(new_df['Photon Energy'], new_df['Corrected S2'], 'Corrected S2', 'Corrected fit', components[0] + '_' + components[1] + '_' +'final fit', bandE)
+        e_temp = 1/(k*final_b)
+        c_temp.append(e_temp)
+        print(f"\nFor {files} the carrier temperature is {e_temp} K.")
+        # print(f"The carrier temperature is {e_temp} K.")
+
+# Checking final data to be plotted for carrier temp plot 
+for i in np.arange(0, len(volts)):
+    if volts[i][0] == 'p':
+        volts[i] = volts[i][1:]
+    elif volts[i][0] == 'n': 
+        volts[i] = '-' + volts[i][1:]
+print(volts)
+print(c_temp)
+volt_int = list(map(float, volts))
+otemp_int = list(map(float, o_temp))
+for i in np.arange(0, len(c_temp)):
+    c_temp[i] = c_temp[i]-273.15
+avg_temp = sum(c_temp)/len(c_temp)
+latt_temp = int(sum(otemp_int)/len(otemp_int))
+new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
+# print(new_x)
+# print(new_y)
+fig = plt.figure()
+plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
+plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
+plt.text(17, latt_temp+7, f'{latt_temp}')
+plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
+plt.text(17, avg_temp+7, f'{round(avg_temp,2)}', color='red')
+plt.ylabel('Carrier Temperature ($^\circ$C)')
+plt.xlabel('Voltage (mV)')
+plt.legend(frameon=False)
+plt.ioff()
+plt.savefig(path2 + f"/{dirName2}/c_temp.png", bbox_inches='tight')
+plt.close(fig)
