@@ -106,7 +106,8 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/995"
+path1 = "./updated_test/843"
+splitted = path1.split('/')
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
 files_dict = {} 
@@ -308,14 +309,27 @@ new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
 # print(new_x)
 # print(new_y)
 fig = plt.figure()
-plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
-plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
-plt.text(17, latt_temp+7, f'{latt_temp}')
-plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
-plt.text(17, avg_temp+7, f'{round(avg_temp,2)}', color='red')
-plt.ylabel('Carrier Temperature ($^\circ$C)')
-plt.xlabel('Voltage (mV)')
-plt.legend(frameon=False)
-plt.ioff()
-plt.savefig(path2 + f"/{dirName2}/c_temp.png", bbox_inches='tight')
-plt.close(fig)
+if (splitted[-1] == '995'):
+    plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
+    plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
+    plt.text(15, latt_temp+4, f'{latt_temp}')
+    plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
+    plt.text(14, avg_temp+4, f'{round(avg_temp,2)}', color='red')
+    plt.ylabel('Carrier Temperature ($^\circ$C)')
+    plt.xlabel('Voltage (mV)')
+    plt.legend(frameon=False)
+    plt.ioff()
+    plt.savefig(path2 + f"/{dirName2}/c_temp.png", bbox_inches='tight')
+    plt.close(fig)
+elif (splitted[-1] == '843'):
+    plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
+    plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
+    plt.text(255, latt_temp+7, f'{latt_temp}')
+    plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
+    plt.text(250, avg_temp+7, f'{round(avg_temp,2)}', color='red')
+    plt.ylabel('Carrier Temperature ($^\circ$C)')
+    plt.xlabel('Voltage (mV)')
+    plt.legend(frameon=False)
+    plt.ioff()
+    plt.savefig(path2 + f"/{dirName2}/c_temp.png", bbox_inches='tight')
+    plt.close(fig)
