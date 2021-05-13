@@ -319,7 +319,7 @@ if (splitted[-1] == '995'):
     plt.text(14, avg_temp+4, f'{round(avg_temp,2)}', color='red')
     plt.ylabel('Carrier Temperature ($^\circ$C)')
     plt.xlabel('Voltage (mV)')
-    plt.legend(frameon=False)
+    plt.legend(frameon=False, prop={'size': 8})
     plt.ioff()
     plt.savefig(path2 + f"/{dirName2}/c_temp.png", bbox_inches='tight')
     plt.close(fig)
