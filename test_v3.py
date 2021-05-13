@@ -107,7 +107,7 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/843"
+path1 = "./updated_test/995"
 splitted = path1.split('/')
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
