@@ -65,6 +65,7 @@ def guess_check(xdata, ydata, label1, label2, plot_title, bandE):
     def second_pass(E, a, b, c): 
         return a + c  * E * np.sqrt(E-bandE) * np.exp(-E*b) 
 
+
     # Curve fit range and weight:
     E = np.linspace(np.min(xdata), np.max(xdata), len(xdata))
     weight_func = np.exp(-E*12)
@@ -276,6 +277,7 @@ for files in data_list:
             new_df['dE_Conv S2c'] =  new_df[col[2]] * new_df[col[1]] / scale
             new_df['dE_Conv S2'] = new_df[col[4]] * new_df[col[1]] / scale
 
+        new_df = new_df.sort_values('Wavelength') # Sorting x values to prevent straight lines
         # Applying curve fit function 
         # DC-offset Correction 
         dc_guessb, dc_guessc, dc_fita, dc_fitb, dc_fitc, fig = guess_check(new_df['Photon Energy'], new_df['S2c'], 'S2c', 'S2c fit', components[0] + '_' + components[1] + '_' +'DC-Offset Fit', bandE)
