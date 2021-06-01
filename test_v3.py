@@ -107,7 +107,7 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/995"
+path1 = "./updated_test/843"
 splitted = path1.split('/')
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
@@ -306,6 +306,8 @@ for i in np.arange(0, len(c_temp)):
 
 print(c_temp)
 avg_temp = sum(c_temp)/len(c_temp)
+std=np.std(c_temp)
+print(f'std = {std}')
 latt_temp = int(sum(otemp_int)/len(otemp_int))
 new_x, new_y = zip(*sorted(zip(volt_int, c_temp)))
 # print(new_x)
