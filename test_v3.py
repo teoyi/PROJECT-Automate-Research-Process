@@ -107,7 +107,7 @@ File manipulation includes:
 print(f"Working from {os.getcwd()}")
 
 # Loading file, and obtaining long name components 
-path1 = "./updated_test/843"
+path1 = "./updated_test/995"
 splitted = path1.split('/')
 data_file = os.listdir(path1) # Create a list of all files in the folder
 
@@ -314,9 +314,9 @@ fig = plt.figure()
 if (splitted[-1] == '995'):
     plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
     plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
-    plt.text(15, latt_temp+4, f'{latt_temp}')
+    plt.text(15, latt_temp+4, f'{latt_temp}.0')
     plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
-    plt.text(15, avg_temp+4, f'{int(avg_temp)}', color='red')
+    plt.text(15, avg_temp+4, f'{round(avg_temp,1)}', color='red')
     plt.ylabel('Carrier Temperature ($^\circ$C)')
     plt.xlabel('Voltage (mV)')
     plt.legend(frameon=False, prop={'size': 8})
@@ -326,9 +326,9 @@ if (splitted[-1] == '995'):
 elif (splitted[-1] == '843'):
     plt.scatter(new_x, new_y, color='black', marker='s', label='Carrier Temperature')
     plt.axhline(latt_temp, ls='--', color='black', label=f'Lattice Temperature')
-    plt.text(255, latt_temp+7, f'{latt_temp}')
+    plt.text(255, latt_temp+7, f'{latt_temp}.0')
     plt.axhline(avg_temp, ls='--', color='red', label=f'Avg. Carrier Temperature')
-    plt.text(255, avg_temp+7, f'{int(avg_temp)}', color='red')
+    plt.text(255, avg_temp+7, f'{round(avg_temp,1)}', color='red')
     plt.ylabel('Carrier Temperature ($^\circ$C)')
     plt.xlabel('Voltage (mV)')
     plt.legend(frameon=False)
